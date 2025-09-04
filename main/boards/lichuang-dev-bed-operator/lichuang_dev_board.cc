@@ -74,7 +74,7 @@ public:
  */
 class Pcf8575 : public I2cDevice {
 private:
-    uint16_t data_ = 0xffff;
+    uint16_t data_ = 0;
     bool initialized_ = false;
 
 public:
@@ -125,14 +125,14 @@ private:
         bed_operating_ = true;
         std::thread([this, bit, duration_ms]() {
             // 低电平
-            pcf8575_->SetBit(bit, 0);
+            pcf8575_->SetBit(bit, 1);
             // 持续 duration_ms 毫秒
             int count = duration_ms / 100;
             for (int i = 0; i < count && bed_operating_; i++) {
                 vTaskDelay(pdMS_TO_TICKS(100));
             }
             // 高电平
-            pcf8575_->SetBit(bit, 1);
+            pcf8575_->SetBit(bit, 0);
             bed_operating_ = false;
         }).detach();
 
